@@ -1,0 +1,21 @@
+params:
+  - id: admin_email
+    type: string
+    name: Login email
+    description: "Email used as the pgAdmin login identity."
+    default_value: "admin@example.com"
+    optional: false
+  - id: admin_password
+    type: secret
+    name: Login password
+    description: "Password for the pgAdmin login, at least 12 characters."
+    default_value: "$random(len=20)"
+    optional: false
+locales:
+  zh:
+    admin_email:
+      name: 登录邮箱
+      description: pgAdmin 的登录账号邮箱。
+    admin_password:
+      name: 登录密码
+      description: pgAdmin 的登录密码，至少 12 位。默认随机生成，不存在内置弱口令。

@@ -1,0 +1,18 @@
+package: community.lazycat.app.pgadmin
+name: pgAdmin 4
+version: 0.0.0
+description: "PostgreSQL administration in the browser: manage databases, run SQL, inspect schemas."
+min_os_version: "1.5.0"
+homepage: https://www.pgadmin.org/
+author: pgAdmin Development Team
+license: PostgreSQL
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: pgAdmin 4
+    description: "浏览器里的 PostgreSQL 管理工具：连库、写 SQL、看表结构和执行计划，也能管理用户与备份。"
+  en:
+    name: pgAdmin 4
+    description: "PostgreSQL administration in the browser: manage databases, run SQL, inspect schemas."

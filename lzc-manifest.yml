@@ -1,0 +1,53 @@
+application:
+  subdomain: pgadmin
+  multi_instance: false
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://pgadmin:80/
+
+services:
+  pgadmin:
+    # upstream: dpage/pgadmin4:9.19.0
+    image: docker.1ms.run/dpage/pgadmin4:9.19.0
+    environment:
+      - |-
+        PGADMIN_DEFAULT_EMAIL={{ .U.admin_email }}
+      - |-
+        PGADMIN_DEFAULT_PASSWORD={{ .U.admin_password }}
+      # Served behind the LazyCat https ingress; pgAdmin would otherwise
+      # build absolute URLs against the container's own http address.
+      - PGADMIN_CONFIG_PROXY_X_FOR_COUNT=1
+      - PGADMIN_CONFIG_PROXY_X_PROTO_COUNT=1
+      - PGADMIN_CONFIG_PROXY_X_HOST_COUNT=1
+      - PGADMIN_CONFIG_PROXY_X_PORT_COUNT=1
+      - PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT=0
+      - PGADMIN_CONFIG_SESSION_COOKIE_SAMESITE='"Lax"'
+      - PGADMIN_CONFIG_SESSION_COOKIE_SECURE=True
+      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+      - PGADMIN_DISABLE_POSTFIX=True
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/pgadmin:/var/lib/pgadmin
+
+usage: |
+  pgAdmin 4 是浏览器里的 PostgreSQL 管理工具。
+
+  使用方法：
+  1. 打开应用，用你安装时设置的邮箱和密码登录（首次登录 pgAdmin 会要求再设一次主密码，
+     用于加密保存的连接信息；本包已关闭主密码提示，登录即可用）。
+  2. 右键"Servers → Register"添加数据库连接，填主机、端口、用户名和密码。
+  3. 之后可以浏览库表结构、写 SQL、看查询计划、导出备份。
+
+  数据与安全：
+  - pgAdmin 自己的配置、已保存的服务器连接和登录会话保存在 /lzcapp/var/pgadmin，
+    卸载应用会一并删除，请定期备份。
+  - 登录邮箱和密码来自安装参数，密码默认随机生成，不存在内置弱口令。
+  - 应用经懒猫入口鉴权访问；已按反代场景配置了 X-Forwarded-* 计数与 Secure Cookie。
+
+  说明：
+  - 单容器部署，pgAdmin 只是客户端工具，**本身不包含数据库**，需要连接已有的 PostgreSQL。
+  - 未配置邮件服务，因此关闭了 postfix；pgAdmin 的邮件相关功能不可用。
+  - 未做真机验证：登录、添加服务器、执行 SQL 以及重启后连接信息持久化均未在设备上实测。
